@@ -1,59 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-</head>
-<body>
-    <h2>WELCOME</h2>
-    <div class="container">
-        <div class="row">
-            <div class="col-4"></div>
-            <div class="col-4">
-                <form action="" method="post" enctype="multipart/form-data">
-                    {%csrf_token%} 
-                    {{form.as_p}}
-                    <button type="submit">ADD</button>
-                </form>
-            </div>
-            <div class="col-4"></div>
-        </div>
+{%extends 'base.html'%} 
+{%block body%}
+<!-- my question section -->
+<div class="card text-bg-primary mb-3" style="max-width: 100%;">
+    <div class="card-header">
+        
+        {%if request.user.profile.profile_pic%}
+        <img src="{{request.user.profile.profile_pic.url}}" class=" circle" alt="..." height="80px">
+        {%endif%}
+        {{request.user}}
+    
     </div>
-    <!-- end question form section -->
-
-    <!-- answer list section -->
-
-
-    <!-- question list session start -->
-    {%for q in questions%}
-        <div>
-            {{q.description}}
-            {%if q.image%}
-                <img src="{{q.image.url}}" alt="">
-            {%endif%}
-            Asked By {{q.user}} on {{q.created_date}}
-
-        </div>
-        <div>
-            <h3>Add your answer:</h3>
-        <form action="{%url 'add-answer' q.id%}" method="post">
-            {%csrf_token%}
-            <input type="text" placeholder="Enter your answer" name="answer">
-            <button type="submit">Add</button>
+    <div class="card-body">
+      <h5 class="card-title">Post a new Question</h5>
+      <p class="card-text">
+        <form action="" method="post" enctype="multipart/form-data">
+            {%csrf_token%} 
+            <textarea name="description" id="" cols="30" rows="10" class="form-control"></textarea>
+            <button type="submit">ADD</button>
         </form>
-        </div>
-        <!-- answer list section -->
-        <h2><u>Answers</u></h2>
-        {%for ans in q.question_answers%}
-            <div>
-                {{ans.answer}} posted by {{ans.user}} on  {{ans.created_date}} <a href="">upvote</a>
-            </div>
-        {%endfor%}
-        <!-- end answer list -->
-        <hr>
-    {%endfor%}
-</body>
-</html>
+      </p>
+    </div>
+  </div>
+
+
+<!-- end question section -->
+{%if request.user.profile%}
+<a href="{%url 'profile-detail'%}">View Profile</a>
+<a href="{%url 'profile-edit' request.user.profile.id %}">Update profile</a>
+{%else%}
+<a href="{%url 'profile-add'%}">AddProfile</a>
+{%endif%}    
+
+<h2>WELCOME {{request.user}}</h2>
+<div class="container">
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+        <form action="" method="post" enctype="multipart/form-data">
+            {%csrf_token%} 
+            {{form.as_p}}
+            <button type="submit">ADD</button>
+        </form>
+    </div>
+    <div class="col-4"></div>
+</div>
+</div>
+<!-- end question form section -->
+
+<!-- answer list section -->
+
+
+<!-- question list session start -->
+{%for q in questions%}
+<div>
+    {{q.description}}
+    {%if q.image%}
+        <img src="{{q.image.url}}" alt="">
+    {%endif%}
+    Asked By {{q.user}} on {{q.created_date}}
+
+</div>
+<div>
+    <h3>Add your answer:</h3>
+<form action="{%url 'add-answer' q.id%}" method="post">
+    {%csrf_token%}
+    <input type="text" placeholder="Enter your answer" name="answer">
+    <button type="submit">Add</button>
+</form>
+</div>
+<!-- answer list section -->
+<h2><u>Answers</u></h2>
+{%for ans in q.question_answers%}
+    <div>
+        {{ans.answer}} posted by {{ans.user}} on  {{ans.created_date}} <a href="{%url 'upvote' ans.id%}">upvote</a> {{ans.upvote_count}}
+    </div>
+{%endfor%}
+<!-- end answer list -->
+<hr>
+{%endfor%}
+{%endblock%}
